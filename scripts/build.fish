@@ -1,20 +1,35 @@
 #!/usr/bin/env fish
 
-set rootDir (dirname (dirname (realpath (status filename))))
 
-mkdir -p lib/mjs lib/cjs
+function die
+    echo "$argv[1]"
+    exit 255
+end
+
+function run
+    set cmd $argv
+    eval "$cmd"; or die "An error occurred while executing: $cmd"
+end
+
+
+set rootDir (dirname (realpath (status dirname)))
+
+run mkdir -p lib/mjs lib/cjs
 echo '{
-    "type": "commonjs"
-}' > lib/cjs/package.json
+    "type": "commonjs",
+    "main": "./index.js",
+    "module": "./index.js"
+}' >lib/cjs/package.json
 
 echo '{
-    "type": "module"
-}' > lib/mjs/package.json
+    "type": "module",
+    "main": "./index.js",
+    "module": "./index.js"
+}' >lib/mjs/package.json
 
 set tscArgs -b tsconfig.json $argv --preserveWatchOutput
 
 echo "Building with args: $tscArgs"
-tsc $tscArgs
+run ttsc $tscArgs
 
 echo "$PWD/lib successfully built"
-

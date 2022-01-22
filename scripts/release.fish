@@ -12,6 +12,11 @@ function run
 end
 
 
+set rootDir (dirname (realpath (status dirname)))
+
+run $rootDir/scripts/pre-version-check.fish
+
+
 set NPM_VERSION $argv[1]
 
 if test -z "$NPM_VERSION"
